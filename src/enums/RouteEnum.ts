@@ -7,7 +7,8 @@ export const PublicRouteEnum = {
     Crossroad: '/auth/crossroad'
 }
 
-export enum PrivateRouteEnum {
-    Home = '/',
-    Profile = '/profile'
+export const PrivateRouteEnum = {
+    Home: '/user/home',
+    Profile: '/user/profile',
+    Intro: '/user/intro'
 }

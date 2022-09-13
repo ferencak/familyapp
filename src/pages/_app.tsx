@@ -17,15 +17,15 @@ const App: FC<AppProps> = ({ Component, pageProps }): JSX.Element => (
 );
 
 const Authorization: FC<IChildren> = ({ children }): JSX.Element => {
-  const { authorization } = useStore();
+  const { store: { authorization: { isAuthenticated }} } = useStore();
   const router = useRouter();
 
   useEffect(() => {
     const currentRouteIsPublic = Object.values(PublicRouteEnum).includes(router.pathname);
-    if (!authorization?.isAuthenticated && !currentRouteIsPublic) {
+    if (!isAuthenticated && !currentRouteIsPublic) {
       router.push(PublicRouteEnum.Crossroad);
     }
-  }, [authorization?.isAuthenticated, router]);
+  }, [isAuthenticated, router]);
 
   return children;
 };

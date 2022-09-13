@@ -19,9 +19,13 @@ interface IAuthorization {
     isAuthenticated: boolean;
 }
 
-export interface IStoreProps {
+export interface IGlobalStore {
     user: IUserProps;
     authorization: IAuthorization;
     application: any;
-    setStore: (_store: IStoreProps) => void;
+}
+
+export interface IStore {
+    store: IGlobalStore;
+    setStore: (_store: IGlobalStore) => void;
 };

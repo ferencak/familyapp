@@ -1,38 +1,44 @@
 import { createContext, FC, useContext, useState } from "react";
 import { IChildren } from "interfaces/IChildren";
-import { IStoreProps } from "interfaces/IStore";
+import { IGlobalStore, IStore } from "interfaces/IStore";
 import { RoleEnum } from "enums/RoleEnum";
 
-const StoreDefaultValues: IStoreProps = {
-    user: {
-        id: "",
-        name: {
-            firstName: "",
-            lastName: "",
-        },
-        email: "",
-        role: RoleEnum.Child,
-    }, 
-    authorization: {
-        authToken: "",
-        expiration: "",
-        refreshToken: "",
-        isAuthenticated: false,
-    }, 
-    application: null,
-    setStore: (_store: IStoreProps) => {},
+const StoreDefaultValues: IStore = {
+    store: {
+        user: {
+            id: "",
+            name: {
+                firstName: "",
+                lastName: "",
+            },
+            email: "",
+            role: RoleEnum.Child,
+        }, 
+        authorization: {
+            authToken: "",
+            expiration: "",
+            refreshToken: "",
+            isAuthenticated: false,
+        }, 
+        application: null,
+    },
+    setStore: (_store: IGlobalStore) => {},
 };
 
-export const StoreContext = createContext<any>(StoreDefaultValues);
+export const StoreContext = createContext<IStore>(StoreDefaultValues);
 
 export const StoreProvider: FC<IChildren> = ({ children }): JSX.Element => {
-    const [store, setStore] = useState<IStoreProps>();
+    const [store, setStoreState] = useState<IGlobalStore>(StoreDefaultValues.store);
+    
+    const setStore = (_store: IGlobalStore) => {
+        setStoreState({ ...store, ..._store});
+    }
     
     return (
-        <StoreContext.Provider value={{ setStore, ...store }}>
+        <StoreContext.Provider value={{ store, setStore }}>
             {children}
         </StoreContext.Provider>
     );
 };
 
-export const useStore = (): IStoreProps => useContext(StoreContext);
+export const useStore = () => useContext<IStore>(StoreContext);
