@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { HiArrowLeft, HiArrowRight, HiAtSymbol, HiEye, HiEyeOff } from "react-icons/hi";
+import { IoIosReturnLeft } from "react-icons/io";
 import wfh1 from "images/wfh_1.svg";
 import { useStore } from "context/store.context";
 
@@ -51,49 +52,49 @@ const SignIn: NextPage = (): JSX.Element => {
     }
 
     return (
-        <div className="flex flex-col justify-between p-5 pb-20 gap-10 h-full">
-            <div className="flex flex-col h-full gap-15">
-                <HiArrowLeft 
-                    className="absolute text-2xl left-10 top-10 text-white"
+        <div className="flex flex-col justify-center px-5 w-full h-full items-center -mt-5 gap-10">
+            <div className="w-70% -mb-5 flex flex-row justify-center">
+                <IoIosReturnLeft 
+                    className="absolute text-2xl left-10 top-10 text-blue-200 hover:text-blue-500 duration-300"
                     onClick={() => router.push(PublicRouteEnum.Crossroad)}
                 />
                 <Image src={wfh1} alt="Welcome" className="h-50%" />
-                <div className="flex flex-col h-fit gap-10">
-                    <div className="flex flex-col justify-center items-center font-bold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-600">
-                        <h1>{ randomWelcomeMessage[randomWelcomeMessageIndex] }</h1>
-                    </div>
-                    <div className="flex flex-col h-full items-start justify-center text-gray-600 text-sm pl-5 pr-5 gap-2">
-                        <div className="relative w-full">
-                            <input
-                                className={`w-full py-3 pl-3 pr-12 text-sm border-1 border-gray-200 rounded-xl ${!isEmailValid && "outline-red-500"}`}
-                                id="email"
-                                type="email"
-                                placeholder="Email Address"
-                                onChange={(e: any) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setEmail(e.target.value)
-                                }}
-                            />
+            </div>
+            <div className="w-full flex flex-col gap-10">
+                <div className="flex flex-col justify-center items-center font-bold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-600">
+                    <h1>{ randomWelcomeMessage[randomWelcomeMessageIndex] }</h1>
+                </div>
+                <div className="flex flex-col h-full items-start justify-center text-gray-600 text-sm pl-5 pr-5 gap-2">
+                    <div className="relative w-full">
+                        <input
+                            className={`w-full py-3 pl-3 pr-12 text-sm border-1 border-gray-200 rounded-xl ${!isEmailValid && "outline-red-500"}`}
+                            id="email"
+                            type="email"
+                            placeholder="Email Address"
+                            onChange={(e: any) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setEmail(e.target.value)
+                            }}
+                        />
 
-                            <span className="absolute text-gray-500 pointer-events-none -translate-y-1/2 top-1/2 right-4">
-                                <HiAtSymbol />
-                            </span>
-                        </div>
-                        <div className="relative w-full">
-                            <input
-                                className="w-full py-3 pl-3 pr-12 text-sm border-1 border-gray-200 rounded-xl"
-                                id="password"
-                                type={ passwordVisibility ? "text" : "password" }
-                                placeholder="Password"
-                            />
-
-                            <span className="absolute text-gray-500 !z-50 -translate-y-1/2 top-1/2 right-4 hover:text-black duration-300">
-                                { !passwordVisibility ? <HiEyeOff className="z-10" onClick={() => setPasswordVisibility(true)} /> : <HiEye onClick={() => setPasswordVisibility(false)} /> }
-                            </span>
-                        </div>
-                        <span className="text-gray-400 text-xs">Reset my password</span>
+                        <span className="absolute text-gray-500 pointer-events-none -translate-y-1/2 top-1/2 right-4">
+                            <HiAtSymbol />
+                        </span>
                     </div>
+                    <div className="relative w-full">
+                        <input
+                            className="w-full py-3 pl-3 pr-12 text-sm border-1 border-gray-200 rounded-xl"
+                            id="password"
+                            type={ passwordVisibility ? "text" : "password" }
+                            placeholder="Password"
+                        />
+
+                        <span className="absolute text-gray-500 !z-50 -translate-y-1/2 top-1/2 right-4 hover:text-black duration-300">
+                            { !passwordVisibility ? <HiEyeOff className="z-10" onClick={() => setPasswordVisibility(true)} /> : <HiEye onClick={() => setPasswordVisibility(false)} /> }
+                        </span>
+                    </div>
+                    <span className="text-gray-400 text-xs">Reset my password</span>
                 </div>
             </div>
             <div className="flex flex-row justify-center">

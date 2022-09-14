@@ -3,7 +3,9 @@ import type { NextPage } from 'next';
 import { useState } from "react";
 import IntroImage from "images/intro-image.svg";
 import Image from "next/image";
-
+import { HiOutlineLogout } from "react-icons/hi";
+import { useRouter } from "next/router";
+import { PublicRouteEnum } from "enums/RouteEnum";
 const Intro: NextPage = (): JSX.Element => {
 
     const {
@@ -13,12 +15,19 @@ const Intro: NextPage = (): JSX.Element => {
             }
         }
     } = useStore();
+    const router = useRouter();
 
     const [comboSelected, setComboSelected] = useState<string>("");
 
     return (
         <div className="flex flex-col justify-center px-5 w-full h-full items-center -mt-5 gap-10">
-            <div className="w-70% -mb-5">
+            <div className="w-70% -mb-5 flex flex-row justify-center">
+                <div className="flex flex-row gap-5 absolute text-2xl right-10 top-10 items-center">
+                    <HiOutlineLogout 
+                        className="text-blue-200 hover:text-blue-500 duration-300"
+                        onClick={() => router.push(PublicRouteEnum.Crossroad)}
+                    />
+                </div>
                 <Image src={IntroImage} alt="Intro" />
             </div>
             <div className="w-full flex flex-col gap-10">
