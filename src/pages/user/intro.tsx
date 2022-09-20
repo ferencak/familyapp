@@ -1,23 +1,36 @@
-import { useStore } from "context/store.context";
 import type { NextPage } from 'next';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IntroImage from "images/intro-image.svg";
 import Image from "next/image";
 import { HiOutlineLogout } from "react-icons/hi";
 import { useRouter } from "next/router";
-import { PublicRouteEnum } from "enums/RouteEnum";
+import { PrivateRouteEnum, PublicRouteEnum } from "enums/RouteEnum";
+import useUser from "hooks/useUser";
+import { useStore } from "context/store.context";
+import useApi from "hooks/useApi";
+
 const Intro: NextPage = (): JSX.Element => {
-
-    const {
-        store: {
-            authorization: {
-                isAuthenticated 
-            }
-        }
-    } = useStore();
     const router = useRouter();
-
+    const { logOut, getUserData } = useUser();
+    const { store } = useStore();
     const [comboSelected, setComboSelected] = useState<string>("");
+
+    const { response: checkHasGroupResponse } = useApi({
+        url: "/users/hasGroup",
+        method: "GET",
+        autoFetch: true,
+        withToken: true,
+        params: {
+            userId: getUserData().id,
+        }
+    });
+
+    useEffect(
+        () => {
+            if(!checkHasGroupResponse) return;
+            if(checkHasGroupResponse.hasGroup) router.push(PrivateRouteEnum.Home);
+        }, [checkHasGroupResponse]
+    );
 
     return (
         <div className="flex flex-col justify-center px-5 w-full h-full items-center -mt-5 gap-10">
@@ -25,7 +38,7 @@ const Intro: NextPage = (): JSX.Element => {
                 <div className="flex flex-row gap-5 absolute text-2xl right-10 top-10 items-center">
                     <HiOutlineLogout 
                         className="text-blue-200 hover:text-blue-500 duration-300"
-                        onClick={() => router.push(PublicRouteEnum.Crossroad)}
+                        onClick={() => logOut()}
                     />
                 </div>
                 <Image src={IntroImage} alt="Intro" />
@@ -40,7 +53,7 @@ const Intro: NextPage = (): JSX.Element => {
                     <h1 
                         className="text-4xl text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500"
                     >
-                        Nikolas!
+                        { getUserData().name.split(' ')[0] }!
                     </h1>
                 </div>
                 <div className="flex flex-col gap-3 px-10 -mb-5">
@@ -96,7 +109,10 @@ const Intro: NextPage = (): JSX.Element => {
                 </div>
                 <div className="flex flex-row items-end justify-end px-10 h-10">
                     { comboSelected.length > 0 && (
-                        <a className="inline-flex delay-100 shadow-xl shadow-blue-500/50 items-center px-5 py-2 text-white bg-blue-500 border border-blue-500 rounded-lg hover:bg-transparent hover:text-blue-500 active:text-blue-500 focus:outline-none focus:ring duration-300">
+                        <a 
+                            className="inline-flex delay-100 shadow-xl shadow-blue-500/50 items-center px-5 py-2 text-white bg-blue-500 border border-blue-500 rounded-lg active:text-blue-500 focus:outline-none focus:ring duration-300"
+                            onClick={() => router.push(PrivateRouteEnum.GroupCreate)}
+                        >
                             <span className="text-sm font-medium">
                                 Continue
                             </span>

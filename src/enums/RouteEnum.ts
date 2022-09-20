@@ -10,5 +10,7 @@ export const PublicRouteEnum = {
 export const PrivateRouteEnum = {
     Home: '/user/home',
     Profile: '/user/profile',
-    Intro: '/user/intro'
+    Intro: '/user/intro',
+    GroupCreate: '/group/create',
+    Welcome: '/user/welcome',
 }

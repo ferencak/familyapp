@@ -6,6 +6,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      display: [
+        // -webkit-inline-box
+        "-webkit-inline-box"
+      ],
       spacing: {
           'm1': '-0.25rem',
           'm2': '-0.5rem',

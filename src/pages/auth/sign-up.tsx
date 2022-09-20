@@ -9,32 +9,43 @@ import wfh1 from "images/wfh_1.svg";
 import { useStore } from "context/store.context";
 import useApi from "hooks/useApi";
 import LoadingContainer from "components/loading-container/LoadingContainer";
+import { RiUser6Line } from "react-icons/ri";
 import { RoleEnum } from "enums/RoleEnum";
-import useUser from "hooks/useUser";
 
-const SignIn: NextPage = (): JSX.Element => {
+const SignUp: NextPage = (): JSX.Element => {
 
     const { setStore, store } = useStore();
-    const { saveUserData } = useUser();
 
     const router = useRouter();
     const [passwordVisibility, setPasswordVisibility] = useState<boolean>(false);
     const [randomWelcomeMessage] = useState<string[]>([
-        "Glad to see you here!"
+        "Lets make your account!"
     ]);
     const [randomWelcomeMessageIndex] = useState<number>(Math.floor(Math.random() * randomWelcomeMessage.length));
     const [isEmailValid, setIsEmailvalid] = useState<boolean>(true);
+    const [firstName, setFirstName] = useState<string>("");
+    const [lastName, setLastName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [confirmPassword, setConfirmPassword] = useState<string>("");
+    const [isPasswordMatch, setIsPasswordMatch] = useState<boolean>(true);
+    const [isPasswordStrong, setIsPasswordStrong] = useState<boolean>(true);
 
     const { call, response, loading, error } = useApi({
-        url: "/auth/login",
+        url: "/auth/register",
         method: "POST",
     });
 
     const onSubmit = async () => {
+        setIsEmailvalid(true);
+        setIsPasswordMatch(true);
+        setIsPasswordStrong(true);
         if(!checkEmailValidation(email)) return setIsEmailvalid(false);
-        await call({
+        if(!checkPasswordMatch()) return setIsPasswordMatch(false);
+        if(!checkPasswordStrength()) return setIsPasswordStrong(false);
+
+        return await call({
+            name: `${firstName} ${lastName}`,
             email: email,
             password: password
         });
@@ -61,12 +72,10 @@ const SignIn: NextPage = (): JSX.Element => {
                 email: response.user.email,
                 role: RoleEnum[response.user.role],
                 isEmailVerified: response.user.isEmailVerified, 
-                groups: response.user.groups
+                groups: []
             }
         });
-        saveUserData(response.user);
-        if(response.user.groups.length === 0) router.push(PrivateRouteEnum.Intro);
-        else router.push(PrivateRouteEnum.Home);
+        router.push(PrivateRouteEnum.Intro);
     }, [response]);
 
     useEffect(
@@ -84,6 +93,16 @@ const SignIn: NextPage = (): JSX.Element => {
         return false;
     }
 
+    const checkPasswordMatch = () => {
+        if(password !== confirmPassword) return false;
+        return true;
+    }
+
+    const checkPasswordStrength = () => {
+        if(password.length < 8) return false;
+        return true;
+    }
+
     return (
         <div className="flex flex-col justify-center px-5 w-full h-full items-center -mt-5 gap-10">
             <div className="w-70% -mb-5 flex flex-row justify-center">
@@ -96,9 +115,6 @@ const SignIn: NextPage = (): JSX.Element => {
             <LoadingContainer loading={loading}>
                 <>
                     <div className="w-full flex flex-col gap-10">
-                        <div className="flex flex-col justify-center items-center font-bold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-teal-600">
-                            <h1>{ randomWelcomeMessage[randomWelcomeMessageIndex] }</h1>
-                        </div>
                         <div className="flex flex-col h-full items-start justify-center text-gray-600 text-sm pl-5 pr-5 gap-2">
                             { error && (
                                 <div className="flex flex-row justify-center items-center w-full">
@@ -111,9 +127,67 @@ const SignIn: NextPage = (): JSX.Element => {
                                     </div>
                                 </div>
                             )}
+                            { !isPasswordStrong && (
+                                <div className="flex flex-row justify-center items-center w-full">
+                                    <div className="flex flex-row items-center w-full rounded-xl bg-red-50 text-red-500 p-2 pl-3 text-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="h-6 w-6 text-red-dark mr-4 fill-red-500"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"></path></svg>
+                                        <div>
+                                            <h1 className="font-bold">Ouch!</h1>
+                                            <p>Password must be at least <b>8</b> characters long</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            { !isPasswordMatch && (
+                                <div className="flex flex-row justify-center items-center w-full">
+                                    <div className="flex flex-row items-center w-full rounded-xl bg-red-50 text-red-500 p-2 pl-3 text-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" className="h-6 w-6 text-red-dark mr-4 fill-red-500"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"></path></svg>
+                                        <div>
+                                            <h1 className="font-bold">Ouch!</h1>
+                                            <p>Passwords do not match</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                             <div className="relative w-full">
                                 <input
-                                    className={`w-full py-3 pl-3 pr-12 text-sm border-1 border-gray-200 rounded-xl ${!isEmailValid && "border-red-500/50"}`}
+                                    className={`w-full py-3 pl-3 pr-12 text-sm border-1 border-gray-200 rounded-xl`}
+                                    id="firstName"
+                                    type="text"
+                                    placeholder="First Name"
+                                    defaultValue={firstName}
+                                    onChange={(e: any) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setFirstName(e.target.value)
+                                    }}
+                                />
+
+                                <span className="absolute text-gray-500 pointer-events-none -translate-y-1/2 top-1/2 right-4">
+                                    <RiUser6Line />
+                                </span>
+                            </div>
+                            <div className="relative w-full mb-5">
+                                <input
+                                    className={`w-full py-3 pl-3 pr-12 text-sm border-1 border-gray-200 rounded-xl`}
+                                    id="lastName"
+                                    type="text"
+                                    placeholder="Last Name"
+                                    defaultValue={lastName}
+                                    onChange={(e: any) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setLastName(e.target.value)
+                                    }}
+                                />
+
+                                <span className="absolute text-gray-500 pointer-events-none -translate-y-1/2 top-1/2 right-4">
+                                    <RiUser6Line />
+                                </span>
+                            </div>
+                            <div className="relative w-full mb-5">
+                                <input
+                                    className={`w-full py-3 pl-3 pr-12 text-sm border-1 border-gray-200 rounded-xl ${!isEmailValid && "outline-red-500"}`}
                                     id="email"
                                     type="email"
                                     placeholder="Email Address"
@@ -147,7 +221,20 @@ const SignIn: NextPage = (): JSX.Element => {
                                     { !passwordVisibility ? <HiEyeOff className="z-10" onClick={() => setPasswordVisibility(true)} /> : <HiEye onClick={() => setPasswordVisibility(false)} /> }
                                 </span>
                             </div>
-                            <span className="text-gray-400 text-xs">Reset my password</span>
+                            <div className="relative w-full">
+                                <input
+                                    className="w-full py-3 pl-3 pr-12 text-sm border-1 border-gray-200 rounded-xl"
+                                    id="confirmPassword"
+                                    type={ passwordVisibility ? "text" : "password" }
+                                    placeholder="Confirm Password"
+                                    defaultValue={confirmPassword}
+                                    onChange={(e: any) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setConfirmPassword(e.target.value)
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="flex flex-col justify-center gap-5">
@@ -157,13 +244,13 @@ const SignIn: NextPage = (): JSX.Element => {
                                 type="button"
                                 onClick={() => onSubmit()}
                             >
-                                Sign In
+                                Sign Up
                                 <HiArrowRight />
                             </button>
                         </div>
                         <p className="flex flex-row gap-1 items-center justify-center text-sm text-center text-gray-400">
-                            No account?
-                            <a className="underline" onClick={() => router.push(PublicRouteEnum.SignUp)}>Sign up</a>
+                            Already have an account?
+                            <a className="underline" onClick={() => router.push(PublicRouteEnum.SignIn)}>Sign in</a>
                         </p>
                     </div>
                 </>
@@ -172,4 +259,4 @@ const SignIn: NextPage = (): JSX.Element => {
     );
 };
 
-export default SignIn;
+export default SignUp;

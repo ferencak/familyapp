@@ -1,4 +1,4 @@
-export enum RoleEnum {
-    Parent = 'Parent',
-    Child = 'Child',
+export const RoleEnum: any = {
+    parent: 'parent',
+    child: 'child',
 }
